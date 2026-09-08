@@ -110,3 +110,56 @@ def build_example_registry() -> ToolRegistry:
         }
 
     return registry
+
+
+# --- 정찰(recon) 도구: PageExplorer 를 Agent 도구로 노출 ----------------------
+
+def build_recon_registry(session: Any) -> ToolRegistry:
+    """실제 브라우저 세션 위에서 페이지 구조를 탐색하는 도구 모음.
+
+    Agent가 목표(예: "이 사이트의 입력 지점을 파악해줘")에 맞춰
+    explore_site 를 호출하면, 요약된 사이트 구조/엔드포인트/폼을 돌려준다.
+    반환 형식은 탐지기 입력으로 바로 쓸 수 있도록 요약 위주로 구성한다.
+    """
+    from ..browser.explorer import PageExplorer  # 지연 임포트(순환/선택 의존)
+
+    registry = ToolRegistry()
+
+    @registry.register(
+        name="explore_site",
+        description=(
+            "허용된 테스트 사이트의 페이지 구조를 탐색한다. 시작 URL에서 동일 호스트 "
+            "링크를 따라가며 각 페이지의 폼·입력 필드·엔드포인트를 수집해 요약을 돌려준다. "
+            "어떤 입력 지점(파라미터/폼)이 있는지 파악해 다음 탐지 단계를 계획할 때 사용한다."
+        ),
+        parameters={
+            "type": "object",
+            "properties": {
+                "seed_url": {"type": "string", "description": "탐색 시작 URL"},
+                "max_depth": {
+                    "type": "integer",
+                    "description": "링크를 따라갈 최대 깊이 (기본 2)",
+                },
+                "max_pages": {
+                    "type": "integer",
+                    "description": "방문할 최대 페이지 수 (기본 20)",
+                },
+            },
+            "required": ["seed_url"],
+        },
+    )
+    def explore_site(
+        seed_url: str, max_depth: int = 2, max_pages: int = 20
+    ) -> dict[str, Any]:
+        explorer = PageExplorer(
+            session, max_depth=max_depth, max_pages=max_pages, verbose=False
+        )
+        result = explorer.crawl(seed_url)
+        # 모델에 넘길 때는 토큰을 아끼기 위해 요약 + 엔드포인트 + 폼 위치만 전달
+        return {
+            "summary": result.summary(),
+            "endpoints": result.endpoints(),
+            "forms": result.all_forms(),
+        }
+
+    return registry

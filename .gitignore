@@ -16,3 +16,6 @@ cookies/
 Thumbs.db
 .idea/
 .vscode/
+
+# 생성되는 사이트 프로파일 (예제 산출물)
+reports/*_profile.json
