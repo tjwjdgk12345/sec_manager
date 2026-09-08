@@ -21,8 +21,8 @@ from __future__ import annotations
 import time
 from collections import Counter, deque
 from dataclasses import asdict, dataclass, field
-from typing import Any
-from urllib.parse import urljoin, urlsplit, urlunsplit
+from typing import Any, Callable
+from urllib.parse import urlsplit, urlunsplit
 
 from .session import BrowserSession
 
@@ -161,6 +161,7 @@ class PageExplorer:
         delay: float = 0.5,
         settle: float = 0.8,
         verbose: bool = True,
+        after_visit: Callable[["PageProfile"], None] | None = None,
     ) -> None:
         """
         max_per_endpoint : 같은 (경로+파라미터이름) 조합을 몇 개까지 방문할지
@@ -179,6 +180,9 @@ class PageExplorer:
         self.delay = delay
         self.settle = settle
         self.verbose = verbose
+        # 각 페이지 방문 직후 호출되는 훅 (예: NetworkCollector.collect()).
+        # 크롤과 네트워크 수집을 한 번의 정찰로 묶을 때 사용한다.
+        self.after_visit = after_visit
 
     def _log(self, *a: Any) -> None:
         if self.verbose:
@@ -232,6 +236,11 @@ class PageExplorer:
 
             profile = self._visit(url, depth)
             result.pages[url] = profile
+            if self.after_visit is not None:
+                try:
+                    self.after_visit(profile)
+                except Exception:  # noqa: BLE001 - 훅 실패가 크롤을 막지 않도록
+                    pass
             self._log(
                 f"[{len(result.pages):>3}] depth={depth} "
                 f"forms={len(profile.forms)} links={len(profile.links)} {url}"

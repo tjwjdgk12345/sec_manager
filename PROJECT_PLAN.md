@@ -44,8 +44,10 @@
 - [x] Agent가 목표에 맞는 탐색 도구를 고를 수 있도록 도구 설명·반환 형식 정리 (도구 스키마 설계) → `build_recon_registry` (explore_site 도구)
 - [x] `PageExplorer` 구현: 동일 호스트 내 링크/버튼/폼/입력 필드 탐색, 중복 방문 방지, 탐색 깊이 제어 → `src/browser/explorer.py`
 - [x] `NetworkCollector` 구현: CDP 로그에서 요청·응답 메타데이터, API 경로, 파라미터, JS 리소스 추출 → `src/browser/network.py`
-- [ ] 페이지 구조 + 네트워크 경로를 연결해 탐지기가 쓸 입력 정보/웹 환경 프로파일 구성
-- [~] (선행 작업) Juice Shop 없이 범용 테스트 사이트로 위 두 도구 먼저 검증 → PageExplorer(the-internet), NetworkCollector(httpbin: XHR /spec.json, POST 본문 파라미터) 검증 완료
+- [x] 페이지 구조 + 네트워크 경로를 연결해 탐지기가 쓸 입력 정보/웹 환경 프로파일 구성 → `src/recon/profile.py` (WebProfile + InputPoint + ReconRunner)
+- [x] (선행 작업) Juice Shop 없이 범용 테스트 사이트로 위 두 도구 먼저 검증 → PageExplorer(the-internet), NetworkCollector(httpbin: XHR /spec.json, POST 본문 파라미터), 결합 프로파일(입력 지점 4종) 검증 완료
+
+> **2-3주차 완료.** 다음: 4주차 오케스트레이션 루프에서 ReconRunner 를 Agent 도구로 묶고, InputPoint 목록을 탐지기 선택 판단에 활용한다.
 
 ### 4주차 — Agent 판단 조건 및 오케스트레이션 루프
 

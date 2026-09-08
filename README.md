@@ -44,6 +44,9 @@ python examples/pageexplorer_demo.py --headless --depth 1 --max-pages 12
 
 # NetworkCollector — CDP 로그에서 API 경로/파라미터/JS 리소스 수집
 python examples/networkcollector_demo.py --headless
+
+# 웹 환경 프로파일 결합 — 위 둘을 묶어 입력 지점(공격 표면) 목록 생성
+python examples/webprofile_demo.py --headless --depth 1 --max-pages 25
 ```
 
 ## 디렉터리 구조
@@ -55,6 +58,7 @@ src/
   browser/session.py  Selenium 세션: 접속/로그인/쿠키 저장·복원, CDP 로그 활성화
   browser/explorer.py PageExplorer: 동일 호스트 링크/폼/입력 탐색(중복방지·깊이제어)
   browser/network.py  NetworkCollector: CDP 로그→API 경로/파라미터/JS 리소스
+  recon/profile.py    WebProfile 결합 + InputPoint(공격 표면) + ReconRunner
 examples/             1주차 실행 데모
 docs/                 취약점 시나리오·판단 기준
 reports/              주간 보고서 (week-XX-report.md)
