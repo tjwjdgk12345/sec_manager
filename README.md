@@ -37,6 +37,15 @@ python examples/minimal_agent_loop.py --backend ollama --model qwen2.5:7b
 python examples/selenium_login_demo.py --headless
 ```
 
+## 정찰 도구 예제 (2-3주차)
+```bash
+# PageExplorer — 사이트 구조(링크/폼/입력) 탐색
+python examples/pageexplorer_demo.py --headless --depth 1 --max-pages 12
+
+# NetworkCollector — CDP 로그에서 API 경로/파라미터/JS 리소스 수집
+python examples/networkcollector_demo.py --headless
+```
+
 ## 디렉터리 구조
 ```
 src/
@@ -44,6 +53,8 @@ src/
   agent/tools.py      도구 레지스트리 + JSON Schema 스키마
   agent/loop.py       최소 오케스트레이션 루프 (도구 호출 상한 포함)
   browser/session.py  Selenium 세션: 접속/로그인/쿠키 저장·복원, CDP 로그 활성화
+  browser/explorer.py PageExplorer: 동일 호스트 링크/폼/입력 탐색(중복방지·깊이제어)
+  browser/network.py  NetworkCollector: CDP 로그→API 경로/파라미터/JS 리소스
 examples/             1주차 실행 데모
 docs/                 취약점 시나리오·판단 기준
 reports/              주간 보고서 (week-XX-report.md)
