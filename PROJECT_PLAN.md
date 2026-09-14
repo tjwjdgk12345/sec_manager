@@ -29,14 +29,14 @@
 - [x] Python/Selenium/Chrome 로컬 개발 환경 설치 (.venv, selenium 4.48, requests)
 - [x] 프로젝트 뼈대 구성 (src/llm, src/agent, src/browser, examples, docs)
 - [ ] Juice Shop 없이도 개발 가능한 부분(PageExplorer, NetworkCollector, Agent 도구 인터페이스)을 범용 웹사이트 대상으로 먼저 구현 진행 중
-- [ ] Ollama 로컬 모델 설치 및 실 루프 검증 (현재 MockClient로 루프 구조 검증 완료)
+- [x] Ollama 로컬 모델 설치 및 실 루프 검증 → qwen2.5:7b 로 실제 도구 호출·판단 확인 (`--backend ollama`)
 
 ## 3. 주차별 할 일
 
 ### 1주차 — Agent 실행 방법 및 기초 예제
 
 - [x] XSS, SQLi, IDOR 각각의 발생 시나리오와 필요한 사전 조건, 성공 판정 근거 정리 → `docs/vuln-scenarios.md`
-- [x] Python 환경에서 AI Agent 기초 예제 구현 (LLM이 도구 하나를 호출하고 결과를 받는 최소 루프) → `src/agent/loop.py`, `examples/minimal_agent_loop.py`
+- [x] Python 환경에서 AI Agent 기초 예제 구현 (LLM이 도구 하나를 호출하고 결과를 받는 최소 루프) → `src/agent/loop.py`, `examples/minimal_agent_loop.py` (Ollama qwen2.5:7b 실모델 검증 완료)
 - [x] Selenium으로 접속, 로그인, 쿠키 유지 예제 구현 → `src/browser/session.py`, `examples/selenium_login_demo.py`
 
 ### 2-3주차 — 페이지 및 네트워크 정보 수집

@@ -63,7 +63,7 @@ class OllamaClient:
         self,
         model: str = "qwen2.5:7b",
         host: str = "http://localhost:11434",
-        timeout: int = 120,
+        timeout: int = 300,  # 콜드 스타트(모델을 메모리에 처음 로드) 대비 넉넉히
     ) -> None:
         self.model = model
         self.host = host.rstrip("/")
