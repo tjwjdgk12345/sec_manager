@@ -23,15 +23,12 @@ pip install -r requirements.txt
 # 1) https://ollama.com 에서 설치 후
 ollama pull qwen2.5:7b      # 도구 호출(tool calling) 지원 모델
 ```
-Ollama 없이도 개발/테스트가 가능하도록 `MockClient`(가짜 LLM)를 제공한다.
+Agent 는 로컬 Ollama 모델을 사용한다 (Ollama 실행 + 모델 pull 필요).
 
 ## 실행 예제 (1주차)
 ```bash
-# 최소 Agent 루프 — 모델 없이 (Mock)
-python examples/minimal_agent_loop.py
-
-# 최소 Agent 루프 — Ollama 로컬 모델
-python examples/minimal_agent_loop.py --backend ollama --model qwen2.5:7b
+# 최소 Agent 루프 — Ollama 로컬 모델 (LLM이 도구 호출)
+python examples/minimal_agent_loop.py --model qwen2.5:7b
 
 # Selenium 접속/로그인/쿠키 데모 (공개 연습 사이트)
 python examples/selenium_login_demo.py --headless
@@ -52,7 +49,7 @@ python examples/webprofile_demo.py --headless --depth 1 --max-pages 25
 ## 디렉터리 구조
 ```
 src/
-  llm/client.py       LLM 추상화 (OllamaClient / MockClient) + 도구 호출
+  llm/client.py       LLM 추상화 (OllamaClient) + 도구 호출
   agent/tools.py      도구 레지스트리 + JSON Schema 스키마
   agent/loop.py       최소 오케스트레이션 루프 (도구 호출 상한 포함)
   browser/session.py  Selenium 세션: 접속/로그인/쿠키 저장·복원, CDP 로그 활성화

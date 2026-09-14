@@ -1,19 +1,19 @@
 """LLM 클라이언트 추상화.
 
 계획서 제약(경량 로컬 모델)에 맞춰 기본 백엔드는 Ollama이지만,
-Agent 코드가 특정 제공자에 묶이지 않도록 공통 인터페이스로 감싼다.
+Agent 코드가 특정 제공자에 묶이지 않도록 공통 인터페이스(LLMClient)로 감싼다.
+나중에 다른 제공자를 붙이려면 chat()만 같은 형태로 구현하면 된다.
 
 - OllamaClient : 로컬 Ollama 서버(http://localhost:11434) 호출
-- MockClient   : Ollama/모델 없이도 루프를 개발/테스트하기 위한 가짜 백엔드
 
-모두 tool calling(도구 호출)을 지원하는 chat() 하나로 통일한다.
+tool calling(도구 호출)을 지원하는 chat() 하나로 통일한다.
 """
 
 from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from typing import Any, Callable, Protocol
+from typing import Any, Protocol
 
 import requests
 
@@ -116,43 +116,3 @@ class OllamaClient:
             return any(n == self.model or n.startswith(self.model) for n in names)
         except requests.RequestException:
             return False
-
-
-class MockClient:
-    """모델 없이 루프를 검증하기 위한 규칙 기반 가짜 LLM.
-
-    decide 콜백을 주면 (messages, tools) -> ChatResult 로 직접 응답을 만들 수 있고,
-    없으면 '마지막 사용자 메시지에 등장하는 첫 도구를 호출'하는 기본 동작을 한다.
-    도구 결과(role=tool)를 받은 다음 턴에는 요약 문장을 반환하고 종료한다.
-    """
-
-    def __init__(
-        self,
-        decide: Callable[[list[dict[str, Any]], list[dict[str, Any]] | None], ChatResult]
-        | None = None,
-    ) -> None:
-        self.decide = decide
-
-    def chat(
-        self,
-        messages: list[dict[str, Any]],
-        tools: list[dict[str, Any]] | None = None,
-    ) -> ChatResult:
-        if self.decide is not None:
-            return self.decide(messages, tools)
-
-        # 직전에 도구 결과를 받았다면 마무리한다.
-        last = messages[-1] if messages else {}
-        if last.get("role") == "tool":
-            return ChatResult(
-                content=f"도구 결과 확인 완료: {last.get('content', '')[:200]}"
-            )
-
-        # 아직 도구를 안 썼다면 첫 번째 도구를 인자 없이 호출한다.
-        if tools:
-            first = tools[0]
-            fn = first.get("function", first)
-            name = fn.get("name", "")
-            return ChatResult(tool_calls=[ToolCall(name=name, arguments={})])
-
-        return ChatResult(content="사용할 도구가 없습니다.")

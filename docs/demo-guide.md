@@ -29,14 +29,13 @@
 python examples/minimal_agent_loop.py
 ```
 **보여줄 것 / 말할 것**
-- 목표 → `reflect_probe` 도구 **호출**(payload 전달) → 결과 되먹임 → "반사 확인됨 → XSS 후보" 결론
-- LLM을 갈아끼울 수 있게 추상화(OllamaClient/MockClient)해 둠 — Mock 은 모델 없이 루프 구조 검증용
-- **실제 로컬 모델(하이라이트)**: 경량 모델이 스스로 도구를 고르고 판단:
+- 경량 로컬 모델(qwen2.5:7b)이 스스로 도구를 고르고 판단:
   ```bash
-  python examples/minimal_agent_loop.py --backend ollama --model qwen2.5:7b
+  python examples/minimal_agent_loop.py --model qwen2.5:7b
   ```
-  → qwen2.5:7b 가 목표 문장에서 payload 를 추출해 `reflect_probe` 호출 후 자연어로 결론
-  → 계획서 제약(경량 로컬 모델) 충족. 첫 실행은 모델 로딩으로 느리니 **미팅 전에 한 번 워밍업** 권장
+- 목표 → 모델이 목표 문장에서 payload 추출 → `reflect_probe` **호출** → 결과 되먹임 → "반사 확인됨 → XSS 후보" 자연어 결론
+- 계획서 제약(경량 로컬 모델) 충족. LLM은 OllamaClient 로 추상화해 나중에 교체 가능
+- 첫 실행은 모델 로딩으로 느리니 **미팅 전에 한 번 워밍업** 권장
 
 ---
 
@@ -104,7 +103,7 @@ python examples/webprofile_demo.py --depth 1 --max-pages 25
 | 주차 | 항목 | 상태 |
 |---|---|---|
 | 1 | XSS/SQLi/IDOR 시나리오·판단 기준 정리 | ✅ `docs/vuln-scenarios.md` |
-| 1 | 최소 Agent 루프 (LLM→도구→결과) | ✅ Mock + Ollama qwen2.5:7b 실모델 검증 |
+| 1 | 최소 Agent 루프 (LLM→도구→결과) | ✅ Ollama qwen2.5:7b 실모델 검증 |
 | 1 | Selenium 접속/로그인/쿠키 | ✅ |
 | 2-3 | 도구 스키마 설계 | ✅ `explore_site` 도구 |
 | 2-3 | PageExplorer | ✅ |
